@@ -97,7 +97,7 @@ void printPostorder (BST_NODE *current)
 
 
 
-void rightRotate(BST *B, BST_NODE *critical, int yes)
+void rightRotate(BST *B, BST_NODE *critical)
 {
     
     BST_NODE *pivot = critical->left;
@@ -134,11 +134,16 @@ void rightRotate(BST *B, BST_NODE *critical, int yes)
 }
 
 
-void leftRotate(BST*B, BST_NODE *critical, int yes)
+void leftRotate(BST*B, BST_NODE *critical)
 {
 	BST_NODE *pivot = critical -> right;
 	critical -> right = pivot -> left;
-	pivot -> left = critical;
+
+
+	if (critical->right != NULL) {
+        critical->right->parent = critical;
+    }
+
 	pivot->parent = critical->parent;
 	
 	if (critical->parent == NULL) {
@@ -151,12 +156,9 @@ void leftRotate(BST*B, BST_NODE *critical, int yes)
         }
     }
 
+	pivot -> left = critical;
+
 	critical-> parent = pivot;
-	
-	if (critical->right != NULL) {
-        critical->right->parent = critical;
-    }
-	
 	updateHeight(critical);
 
 }
