@@ -348,7 +348,7 @@ int recursiveSum (BST_NODE *node)
 {
    if (node == NULL) return 0;
 
-   return(recursiveSum(node-> left) + getHeight(node) + recursiveSum(node -> right));
+   return(recursiveSum(node-> left) + (node->height) + recursiveSum(node -> right));
 }
 
 int sumOfHeight(BST* B)
@@ -544,6 +544,7 @@ int main(){
 				break;
 			case 'p':
 				printf("Tree (rotated +90 degrees): \n");
+                printf("%d ", sumOfHeight(B));
 				showTree(B);
 				printf("\n");
 				break;
@@ -584,6 +585,7 @@ int main(){
 				break;
 			case 'X':
                 scanf("%d %d", &i, &j);
+
                 BST_NODE* LCA = findLCA(B->root, i, j);
                 if (!LCA){
                     printf("NULL");
