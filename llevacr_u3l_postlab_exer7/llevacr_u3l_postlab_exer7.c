@@ -102,7 +102,7 @@ void insert(HEAP *H, int key)
 	int temp;
 
 	// this performs percolate up, loop terminates only when at root or parent is already lesser than the child
-	while (parent != 0 && (H->heap[parent] > H->heap[index]))
+	while (parent != 0 && (H->heap[parent] < H->heap[index]))
 	{
 		temp = H->heap[parent];
 		H->heap[parent] = H->heap[index];

@@ -1,0 +1,124 @@
+%%verilog
+module decoder(
+    input [1:0] A,
+    output [3:0] X
+);
+
+assign X[0] = ~A[0] & ~A[1];
+assign X[1] = A[0] & ~A[1];
+assign X[2] = ~A[0] & A[1];
+assign X[3] = A[0] & A[1];
+
+endmodule
+
+
+module decoder_tb;
+
+  reg [1:0] opcode;
+  wire [3:0] output_lines;
+
+  decoder dTester(
+      .A(opcode),
+      .X(output_lines)
+  );
+
+initial begin
+
+  opcode = 2'b11;
+  #10
+
+  $display("opcode = %b \nresult = %b", opcode, output_lines);
+end
+endmodule
+
+
+module custom_function (
+  input [7:0] operand_A,
+  input [7:0] operand_B,
+  output [7:0] result
+);
+
+  // to store values of the gates
+  wire [7:0] and_result;
+  wire [7:0] not_a_result;
+
+  // SUBCOMPONENTS NEEDED: NOT GATE, AND GATE
+  // INSTANTIATE SUBCOMPONENTS HERE
+  and_gate and_inst (
+    .input_a(operand_A),
+    .input_b(operand_B),
+    .output_z(and_result)
+  );
+
+  not_gate not_inst (
+    .input_a(operand_A),
+    .output_z(not_a_result)
+  );
+
+  // AND(A, B)+ NOT(A)
+  // Perform OR operation last
+  assign result = and_result + not_a_result;
+
+endmodule
+
+// Subcomponent =>> 8-bit AND gate
+module and_gate (
+  input [7:0] input_a,
+  input [7:0] input_b,
+  output [7:0] output_z
+);
+
+  assign output_z = input_a & input_b;
+
+endmodule
+
+// Subcomponent =>> 8-bit NOT gate
+module not_gate (
+  input [7:0] input_a,
+  output [7:0] output_z
+);
+
+  assign output_z = ~input_a;
+
+endmodule
+
+
+module project(
+    input [17:0] inst,
+    output [7:0] result
+);
+
+wire [3:0] activated;
+wire [7:0] resultHolder;
+
+decoder decoderObj (.A(inst[17:16]), .X(activated));
+
+always @(*) begin
+  if (activated[3]) begin
+    custom_function cs (.operand_A(inst[15:8]), .operand_B(inst[7:0]), .result(resultHolder));
+  end else begin
+      resultHolder = 8'b0; 
+  end
+end
+
+
+assign result = resultHolder;
+endmodule
+
+module project_tb;
+
+reg [17:0] inst_tb;
+wire [7:0] result_tb;
+
+
+project projectObj (.inst(inst_tb), .result(result_tb));
+
+initial begin
+  inst_tb = 18'b111000000000000001;
+  #10
+
+  $display("result: %b", result_tb);
+
+end
+
+endmodule
